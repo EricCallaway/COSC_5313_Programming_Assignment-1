@@ -13,8 +13,4 @@ public class node {
         return "City name: " + this.name +
         ", ID: " + this.ID + ", Neighbors: " + this.neighbors;
     }
-
-    public int[] getNeighbors(){
-        return neighbors;
-    }
 }
