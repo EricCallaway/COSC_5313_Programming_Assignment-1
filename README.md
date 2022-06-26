@@ -26,3 +26,9 @@ This file creates a node object for use in the MapBuilder.java file. This file c
 1. Name of the City
 2. ID of the City
 3. The cities neighbors
+
+How to Run:
+1. Compile node.java (javac node.java)
+2. Compile MapBuilder.java (javac MapBuilder.java)
+3. Run MapBuilder.java for this is where the main method is. (java MapBuilder)
+The output is the 20x20 grid displaying the neighbors of each city.
