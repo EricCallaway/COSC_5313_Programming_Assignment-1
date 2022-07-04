@@ -1,17 +1,122 @@
-// import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Scanner;
 
 
 public class MapBuilder{
 
-    public static void sort(ArrayList<node> nodeList){
+    private int V;                  // Number of nodes in the Graph
+    private LinkedList<Integer> adj[]; // Adjacency list
+    private Queue<Integer> queue;      // Maintaining a Queue
 
+    MapBuilder(int v){
+        V = v;
+        adj = new LinkedList[v];
+        for(int i=0;i<v;i++){
+            adj[i] = new LinkedList<>();
+        }
+        queue = new LinkedList<>();
+    }
+
+    node find_node (int id, ArrayList<node> nodeList){
+        node n = new node("test", -1, new int[]{-1});
+        for (int i = 0; i < nodeList.size(); i++){
+            if (id == nodeList.get(i).ID){
+                n = nodeList.get(i);
+            }
+        }
+        return n;
+    }
+
+
+
+
+    void addEdge(int v,int w)
+    {
+        adj[v].add(w);                          //adding an edge to the adjacency list (edges are bidirectional in this example)
+    }
+
+    void breadthFirst(int n, ArrayList<node> nodeList, node destination_node)
+    {
+        node dest_node = destination_node;
+        System.out.println("Destination City: " + dest_node.name);
+        boolean nodes[] = new boolean[V];       //initialize boolean array for holding the data
+        int current = 0;
+        String [] bfs_list = new String[20];
+        int [] visited;
+        int current_node_id;
+        bfs_list[n] = nodeList.get(n).name;
+        System.out.println("Root Node Selected: " + bfs_list[n]);
+        System.out.println("------------------------------------------");
+
+        System.out.println("Printing out Adjacency list: ");
+
+        for (int j = 0; j < adj.length; j++) {
+            System.out.println(j +" = "+adj[j]);
+            System.out.println(adj[j].size());
+        }
+        System.out.println("------------------------------------------");
+ 
+        nodes[n]=true;                  
+        queue.add(n);                   //root node is added to the top of the queue
+ 
+        while (queue.size() != 0)
+        {
+            n = queue.poll(); 
+            current_node_id = n;
+            // if (n == dest_node.ID){
+            //     System.out.println("Destination has been found");
+            //     System.out.println("Destination node: " + dest_node.name);
+            //     break;
+            // }
+                                    //remove the top element of the queue
+            bfs_list[n] = nodeList.get(n).name;
+            System.out.print(bfs_list[n]);
+            System.out.println("\t\t\tCity ID: " + n + " "); //print the top element of the queue
+
+            
+                            
+            for (int i = 0; i < adj[n].size(); i++)  //iterate through the linked list and push all neighbors into queue
+            {
+                
+                current = adj[n].get(i);
+                if (!nodes[current])                    //only insert nodes into queue if they have not been explored already
+                {
+                    node temp = nodeList.get(i);
+                    nodes[current] = true;
+                    for (int k = 0; k < nodeList.size(); k++){
+                        if (current == nodeList.get(k).ID){
+                            temp = nodeList.get(k);
+                        }
+                    }
+                    temp.path_to_node.add(n);
+                    //NEED TO FIX, might be able to make this a recursive function, that finds the parent of each node and adds that parent's path to the current nodes path.
+                    // for (int j = 0; j < temp.path_to_node.size(); j++){
+                    //     node parent = find_node(n, nodeList);
+                    //     if (parent.path_to_node.size() != 0){
+                    //         temp.path_to_node.add(parent.ID);
+                    //     }
+                    // }
+
+                    System.out.println(n + " Should be the parent of " + temp.ID);
+                    System.out.println("Path to node: " + temp.name + " - "  + temp.path_to_node.toString());
+                    
+                    // for (int m = 0; m < temp.path_to_node.size(); m++){
+                    //     System.out.println(" " + temp.path_to_node.get(i));
+                    // }
+                    queue.add(current);
+                }
+            }  
+        }
     }
     public static void main(String[] args){
         int [][] map = new int[20][20];
         ArrayList<node> nodeList = new ArrayList<>();
+        
 
         node c0 = new node("Oradea", 0, new int[]{1,7});
         nodeList.add(c0);
@@ -73,6 +178,10 @@ public class MapBuilder{
         node c19 = new node("Neamt", 19, new int[]{18});
         nodeList.add(c19);
 
+
+        node dest_node = c12;
+        MapBuilder mb = new MapBuilder(nodeList.size());
+
         Collections.sort(nodeList, new Comparator<node>() {
             public int compare(node n1, node n2){
                 return Integer.valueOf(n1.ID).compareTo(n2.ID);
@@ -80,7 +189,6 @@ public class MapBuilder{
         });
 
         for(int i=0;i<map.length;i++){
-            // nodeList.get(i);
             for(int j=0;j<map.length;j++){
                 for(int k=0;k<nodeList.get(i).neighbors.length;k++){
                     if(j == nodeList.get(i).neighbors[k]){
@@ -96,6 +204,42 @@ public class MapBuilder{
             }
             System.out.println();
         }
+
+        System.out.println("------------------------------------------");
+        System.out.println(nodeList.size());
+        System.out.println("Enter the name of the starting City: ");
+        Scanner sc = new Scanner(System.in);
+        String s_name = sc.nextLine();
+        node root_node = nodeList.get(0);
+        int root;        
+        boolean found = false;                                               // ID of root node
+
+        //Search for root node
+        for(int i = 0; i < nodeList.size();i++){
+            if (nodeList.get(i).name.equals(s_name)){
+                root_node = nodeList.get(i);
+                found = true;
+                break;
+            }
+        }
+        if (!found){
+            System.out.println("Warning:" + s_name + " is an invalid city name.\nAlgorithm will continue with 'Oradea' as the root node.");
+        }
+        System.out.println("The root node is: " + root_node.name);
+
+        for (int i = 0; i < nodeList.size(); i++){
+            for (int j = 0; j < nodeList.get(i).neighbors.length; j++){
+                System.out.println(" i: " + i + " j:" + j);
+                mb.addEdge(i, nodeList.get(i).neighbors[j]);
+            }
+            System.out.println(" ");
+        }
+        
+
+
+
+        System.out.println("Printing out Breadth First Search Traversal");
+        mb.breadthFirst(root_node.ID, nodeList, dest_node);
         
     }
 }

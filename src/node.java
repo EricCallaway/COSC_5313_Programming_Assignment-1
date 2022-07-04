@@ -1,7 +1,11 @@
+import java.util.LinkedList;
+
 public class node {
     String name;
     int ID;
     int[] neighbors;
+    int[] children;
+    LinkedList<Integer> path_to_node = new LinkedList<Integer>();
 
     node(String name, int ID, int[] neighbors){
         this.name = name;
