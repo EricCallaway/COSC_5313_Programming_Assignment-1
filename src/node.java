@@ -5,7 +5,7 @@ public class node {
     int ID;
     int[] neighbors;
     int[] children;
-    LinkedList<Integer> path_to_node = new LinkedList<Integer>();
+    LinkedList<String> path_to_node = new LinkedList<String>();
 
     node(String name, int ID, int[] neighbors){
         this.name = name;

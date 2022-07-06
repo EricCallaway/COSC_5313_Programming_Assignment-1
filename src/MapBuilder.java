@@ -53,7 +53,7 @@ public class MapBuilder{
         boolean nodes[] = new boolean[V];       //initialize boolean array for holding the data
         int current = 0;
         String [] bfs_list = new String[20];
-        LinkedList<Integer> visited = new LinkedList<Integer>();
+        LinkedList<String> visited = new LinkedList<String>();
         bfs_list[n] = nodeList.get(n).name;
         System.out.println("Root Node Selected: " + bfs_list[n]);
         System.out.println("------------------------------------------");
@@ -66,7 +66,7 @@ public class MapBuilder{
         while (queue.size() != 0)
         {
             n = queue.poll(); 
-            visited.add(n);
+            visited.add(nodeList.get(n).name);
             
                                     //remove the top element of the queue
             bfs_list[n] = nodeList.get(n).name;
@@ -91,9 +91,9 @@ public class MapBuilder{
                         }
                         
                     if (!temp.path_to_node.contains(n)){
-                        temp.path_to_node.add(n);
+                        temp.path_to_node.add(nodeList.get(n).name);
                     }
-                    temp.path_to_node.add(temp.ID);
+                    temp.path_to_node.add(temp.name);
                     System.out.println("Path to node: " + temp.name + " - "  + temp.path_to_node.toString());
                     
                     queue.add(current);
@@ -106,7 +106,7 @@ public class MapBuilder{
                 System.out.println("The path to the destination node is : " + dest_node.path_to_node.toString());
                 int cost = calc_path_cost(1, dest_node.path_to_node.size());
                 System.out.println("The total cost of the path to " + dest_node.name  +  " is " + cost);
-                System.out.println("The order of the total amount of visited nodes is: " + visited);
+                System.out.println("The order of all visited nodes is: " + visited);
                 System.out.println("**********************************************");
                 break;
             }
