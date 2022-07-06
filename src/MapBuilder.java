@@ -31,6 +31,12 @@ public class MapBuilder{
         }
         return n;
     }
+    
+    int calc_path_cost(int w, int num_vertices){
+        int cost = (num_vertices - 1) * w;
+        return cost;
+
+    }
 
 
 
@@ -47,19 +53,12 @@ public class MapBuilder{
         boolean nodes[] = new boolean[V];       //initialize boolean array for holding the data
         int current = 0;
         String [] bfs_list = new String[20];
-        int [] visited;
-        int current_node_id;
+        LinkedList<Integer> visited = new LinkedList<Integer>();
         bfs_list[n] = nodeList.get(n).name;
         System.out.println("Root Node Selected: " + bfs_list[n]);
         System.out.println("------------------------------------------");
 
-        System.out.println("Printing out Adjacency list: ");
 
-        for (int j = 0; j < adj.length; j++) {
-            System.out.println(j +" = "+adj[j]);
-            System.out.println(adj[j].size());
-        }
-        System.out.println("------------------------------------------");
  
         nodes[n]=true;                  
         queue.add(n);                   //root node is added to the top of the queue
@@ -67,16 +66,12 @@ public class MapBuilder{
         while (queue.size() != 0)
         {
             n = queue.poll(); 
-            current_node_id = n;
-            // if (n == dest_node.ID){
-            //     System.out.println("Destination has been found");
-            //     System.out.println("Destination node: " + dest_node.name);
-            //     break;
-            // }
+            visited.add(n);
+            
                                     //remove the top element of the queue
             bfs_list[n] = nodeList.get(n).name;
             System.out.print(bfs_list[n]);
-            System.out.println("\t\t\tCity ID: " + n + " "); //print the top element of the queue
+            System.out.println("\t\t\tCity ID: " + n + " \n"); //print the top element of the queue
 
             
                             
@@ -88,29 +83,34 @@ public class MapBuilder{
                 {
                     node temp = nodeList.get(i);
                     nodes[current] = true;
-                    for (int k = 0; k < nodeList.size(); k++){
-                        if (current == nodeList.get(k).ID){
-                            temp = nodeList.get(k);
+                    temp = find_node(current, nodeList);
+                    
+                    node parent = find_node(n, nodeList);
+                    for (int j = 0; j < parent.path_to_node.size(); j++){
+                            temp.path_to_node.add(parent.path_to_node.get(j));
                         }
+                        
+                    if (!temp.path_to_node.contains(n)){
+                        temp.path_to_node.add(n);
                     }
-                    temp.path_to_node.add(n);
-                    //NEED TO FIX, might be able to make this a recursive function, that finds the parent of each node and adds that parent's path to the current nodes path.
-                    // for (int j = 0; j < temp.path_to_node.size(); j++){
-                    //     node parent = find_node(n, nodeList);
-                    //     if (parent.path_to_node.size() != 0){
-                    //         temp.path_to_node.add(parent.ID);
-                    //     }
-                    // }
-
-                    System.out.println(n + " Should be the parent of " + temp.ID);
+                    temp.path_to_node.add(temp.ID);
                     System.out.println("Path to node: " + temp.name + " - "  + temp.path_to_node.toString());
                     
-                    // for (int m = 0; m < temp.path_to_node.size(); m++){
-                    //     System.out.println(" " + temp.path_to_node.get(i));
-                    // }
                     queue.add(current);
                 }
             }  
+            if (n == dest_node.ID){
+                System.out.println("**********************************************");
+                System.out.println("Destination node has been found!");
+                System.out.println("Destination node: " + dest_node.name);
+                System.out.println("The path to the destination node is : " + dest_node.path_to_node.toString());
+                int cost = calc_path_cost(1, dest_node.path_to_node.size());
+                System.out.println("The total cost of the path to " + dest_node.name  +  " is " + cost);
+                System.out.println("The order of the total amount of visited nodes is: " + visited);
+                System.out.println("**********************************************");
+                break;
+            }
+
         }
     }
     public static void main(String[] args){
@@ -188,25 +188,8 @@ public class MapBuilder{
             }
         });
 
-        for(int i=0;i<map.length;i++){
-            for(int j=0;j<map.length;j++){
-                for(int k=0;k<nodeList.get(i).neighbors.length;k++){
-                    if(j == nodeList.get(i).neighbors[k]){
-                        map[i][j] = 1;
-                    }
-                }
-            }
-        }
         
-        for(int i=0;i<map.length;i++){
-            for(int j=0;j<map.length;j++){
-                System.out.print(map[i][j] + " ");
-            }
-            System.out.println();
-        }
-
         System.out.println("------------------------------------------");
-        System.out.println(nodeList.size());
         System.out.println("Enter the name of the starting City: ");
         Scanner sc = new Scanner(System.in);
         String s_name = sc.nextLine();
@@ -229,10 +212,8 @@ public class MapBuilder{
 
         for (int i = 0; i < nodeList.size(); i++){
             for (int j = 0; j < nodeList.get(i).neighbors.length; j++){
-                System.out.println(" i: " + i + " j:" + j);
                 mb.addEdge(i, nodeList.get(i).neighbors[j]);
             }
-            System.out.println(" ");
         }
         
 
