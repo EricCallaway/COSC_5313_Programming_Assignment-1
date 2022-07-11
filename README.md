@@ -32,3 +32,8 @@ How to Run:
 2. Compile MapBuilder.java (javac MapBuilder.java)
 3. Run MapBuilder.java for this is where the main method is. (java MapBuilder)
 The output is the 20x20 grid displaying the neighbors of each city.
+4. While Mapbuilder.java is running, the program will ask the user for a starting city. Enter the city you wish to choose as a starting point. Then the program will show the BFS and DFS implementations.  After the output of those alogorithms, the progaram will ask the user for a level. This level will determine how deep the Iterative deepening search algorithm goees. After a level is enterd the IDS algorithm will commence. 
+5. Displayed from each algorithm will be three pieces of data:
+    a.) The list of cities visited/explored (in order) while searching.
+    b.) The path from the starting city to the destination. (How to? See the Tip next page.)
+    c.) The total path cost (each step costs 1).
