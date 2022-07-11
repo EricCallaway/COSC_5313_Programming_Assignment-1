@@ -38,90 +38,21 @@ public class MapBuilder{
 
     }
 
-    		
-
-    private ArrayList<Integer>[] adjList;
-    
-
-    @SuppressWarnings("unchecked")
-    private void initAdjList(){
-        adjList = new ArrayList[20];
-
-        for (int i = 0; i < 20; i++){
-            adjList[i] = new ArrayList<>();
-        }
-    }
-
-    // void shortest_path()
-    
-
-
     void addEdge(int u,int v)
     {
         adj[u].add(v);
-        adjList[u].add(v);                          //adding an edge to the adjacency list (edges are bidirectional in this example)
     }
 
-    public List<List<Integer>> shortest_path = new ArrayList<>();
-    public void printAllPaths(int s, int d ){
-        boolean[] isVisited = new boolean[20];
-        ArrayList<Integer> pathList = new ArrayList<>();
-
-        pathList.add(s);
-        // shortest_path.add(pathList);
-        // for (int i = 0; i < shortest_path.size(); i++){
-        //         System.out.println("Printing out shortest path variable: " + shortest_path);
-        //         System.out.println("Printing out shortest path size: " + shortest_path.size());
-        //     }
-
-        printAllPathsUtil(s, d, isVisited, pathList);
-    }
-
-    // A recursive function to print
-    // all paths from 'u' to 'd'.
-    // isVisited[] keeps track of
-    // vertices in current path.
-    // localPathList<> stores actual
-    // vertices in the current path
-
-    
-    private void printAllPathsUtil(Integer u, Integer d,
-                                   boolean[] isVisited,
-                                   ArrayList<Integer> localPathList)
-    {
-        
- 
-        if (u.equals(d)) {
-            System.out.println(localPathList);
-            // if match found then no need to traverse more till depth
-            // shortest_path.add(localPathList);
-            // for (int i = 0; i < shortest_path.size(); i++){
-            //     System.out.println("Printing out shortest path variable: " + shortest_path);
-            //     System.out.println("Printing out shortest path size: " + shortest_path.size());
-            // }
-            return;
-        }
- 
-        // Mark the current node
-        isVisited[u] = true;
- 
-        // Recur for all the vertices
-        // adjacent to current vertex
-        for (Integer i : adjList[u]) {
-            if (!isVisited[i]) {
-                // store current node
-                // in path[]
-                localPathList.add(i);
-                printAllPathsUtil(i, d, isVisited, localPathList);
- 
-                // remove current node
-                // in path[]
-                localPathList.remove(i);
+    //This function removes duplicates from the path to a node
+    void remove_dups(LinkedList<String> path){
+        for(int i = 0; i < path.size(); i++){
+            String dup = path.get(i);
+            for (int j = 1; j < path.size(); j++){
+                if(path.get(j).equals(dup) && j != i){
+                    path.remove(j);
+                }
             }
         }
- 
-        // Mark the current node
-        isVisited[u] = false;
     }
 
     // This method takes in an integer n, which is the ID of the root node, the list of cities, and the destination node.
@@ -136,8 +67,6 @@ public class MapBuilder{
         bfs_list[n] = nodeList.get(n).name;
         System.out.println("Root Node Selected: " + bfs_list[n]);
         System.out.println("------------------------------------------");
-
-
  
         nodes[n]=true;                  
         queue.add(n);                   //root node is added to the top of the queue
@@ -152,11 +81,8 @@ public class MapBuilder{
             System.out.print(bfs_list[n]);
             System.out.println("\t\t\tCity ID: " + n + " \n"); //print the top element of the queue
 
-            
-                            
             for (int i = 0; i < adj[n].size(); i++)  //iterate through the linked list and push all neighbors into queue
             {
-                
                 current = adj[n].get(i);
                 if (!nodes[current])                    //only insert nodes into queue if they have not been explored already
                 {
@@ -168,17 +94,19 @@ public class MapBuilder{
                     for (int j = 0; j < parent.path_to_node.size(); j++){
                             temp.path_to_node.add(parent.path_to_node.get(j));
                         }
-                        
                     if (!temp.path_to_node.contains(n)){
                         temp.path_to_node.add(nodeList.get(n).name);
                     }
                     temp.path_to_node.add(temp.name);
+                    remove_dups(temp.path_to_node);
                     System.out.println("Path to node: " + temp.name + " - "  + temp.path_to_node.toString());
-                    
                     queue.add(current);
                 }
             }  
             if (n == dest_node.ID){
+                //Remove duplicates
+                remove_dups(dest_node.path_to_node);
+
                 System.out.println("**********************************************");
                 System.out.println("Destination node has been found!");
                 System.out.println("Destination node: " + dest_node.name);
@@ -195,7 +123,7 @@ public class MapBuilder{
 
     void depthFirst(int n, ArrayList<node> nodeList, node destination_node){
         boolean nodes[] = new boolean[20];
-
+        List<String> visited = new ArrayList<>();
         Stack<Integer> stack = new Stack<>();
 
         stack.push(n); // Push root node onto stack
@@ -204,58 +132,32 @@ public class MapBuilder{
         while(!stack.empty()){
             n = stack.peek();
             stack.pop();
-
             node curr_n = find_node(n, nodeList);
 
             if(nodes[n] == false){
-                // System.out.println("This node has not been visited: ");
                 System.out.println("We are currently at city: " + curr_n.name + ", ID: " + n);
                 nodes[n] = true;
+                visited.add(curr_n.name);
             }
-
-
-            // System.out.println("Size of the path to node " + curr_n.name  + " is " + curr_n.path_to_node.size());
-
-            // if (!curr_n.path_to_node.contains(curr_n.name)){
-            //     System.out.println(curr_n.name + "'s path does not have the duplicate city " + curr_n.name);
-            //     curr_n.path_to_node.add(curr_n.name);
-            //     for (int k = 0; k < curr_n.path_to_node.size(); k++){
-            //         if (!curr_n.path_to_node.get(k).contains(curr_n.name)){
-            //             curr_n.path_to_node.add(curr_n.name);
-            //             System.out.println("Adding node: " + curr_n.path_to_node.get(k));
-            //             break;
-            //         }
-            //     }
-            // }
-
-            
-            
-
-
-            System.out.println("The path to city: " + curr_n.name + " is " + curr_n.path_to_node);
 
             for (int i = 0; i < adj[n].size(); i++){
-                
                 current = adj[n].get(i);
                 if(!nodes[current]){
-                    node temp = find_node(current, nodeList);
-                    node parent = find_node(n, nodeList);
-
-                    // for(int j = 0; j < parent.path_to_node.size(); j++){
-                    //     temp.path_to_node.add(parent.path_to_node.get(j));
-                    // }
-
-                    if(!temp.path_to_node.contains(n)){
-                        temp.path_to_node.add(nodeList.get(n).name);
-                        temp.path_to_node.add(temp.name);
-                    }
-                    System.out.println("Path to node: " + temp.name + " - " + temp.path_to_node.toString());
-
                     stack.push(current);
                 }
+            if(curr_n.ID == destination_node.ID){
+                System.out.println("**********************************************");
+                    System.out.println("Destination node has been found!");
+                    System.out.println("List of cities explored: " + visited);
+                    System.out.println("Path from " + visited.get(0) + " to " + destination_node.name + " is: " + visited);
+                    int cost = calc_path_cost(1, visited.size());
+                    System.out.println("The path cost is: " + cost);
+                    System.out.println("**********************************************");
+                    return;
             }
-            System.out.println();
+            }
         }
+        
     }
     public static void main(String[] args){
         int [][] map = new int[20][20];
@@ -325,7 +227,6 @@ public class MapBuilder{
 
         node dest_node = c12;
         MapBuilder mb = new MapBuilder(nodeList.size());
-        mb.initAdjList();
 
         mb.addEdge(0, 1);
         mb.addEdge(0, 7);
@@ -392,15 +293,7 @@ public class MapBuilder{
         mb.addEdge(18, 19);
 
         mb.addEdge(19, 18);
-
         
-        int source = 7;
-        int destination = 12;
-        mb.printAllPaths(source, destination);
-        
-            
-        
-
         Collections.sort(nodeList, new Comparator<node>() {
             public int compare(node n1, node n2){
                 return Integer.valueOf(n1.ID).compareTo(n2.ID);
@@ -428,6 +321,7 @@ public class MapBuilder{
             System.out.println("Warning:" + s_name + " is an invalid city name.\nAlgorithm will continue with 'Oradea' as the root node.");
         }
         System.out.println("The root node is: " + root_node.name);
+        System.out.println("The destination node is: " + dest_node.name);
 
         for (int i = 0; i < nodeList.size(); i++){
             for (int j = 0; j < nodeList.get(i).neighbors.length; j++){
@@ -438,12 +332,10 @@ public class MapBuilder{
 
 
 
-        // System.out.println("Printing out Breadth First Search Traversal");
-        // mb.breadthFirst(root_node.ID, nodeList, dest_node);
+        System.out.println("Printing out Breadth First Search Traversal");
+        mb.breadthFirst(root_node.ID, nodeList, dest_node);
+        System.out.println("------------------------------------------");
         System.out.println("Printing out Depth First Search Traversal.");
-        System.out.println("Following are all different paths from Sibiu to Bucharest.");
-        
-        
         mb.depthFirst(root_node.ID, nodeList, dest_node);
         
     }
