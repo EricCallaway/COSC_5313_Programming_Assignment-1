@@ -75,7 +75,6 @@ public class MapBuilder{
         {
             n = queue.poll(); 
             visited.add(nodeList.get(n).name);
-            
                                     //remove the top element of the queue
             bfs_list[n] = nodeList.get(n).name;
             System.out.print(bfs_list[n]);
@@ -103,6 +102,7 @@ public class MapBuilder{
                     queue.add(current);
                 }
             }  
+
             if (n == dest_node.ID){
                 //Remove duplicates
                 remove_dups(dest_node.path_to_node);
@@ -117,7 +117,6 @@ public class MapBuilder{
                 System.out.println("**********************************************");
                 break;
             }
-
         }
     }
 
@@ -154,10 +153,59 @@ public class MapBuilder{
                     System.out.println("The path cost is: " + cost);
                     System.out.println("**********************************************");
                     return;
+                }
+            }
+        }
+    }
+
+    //Iterative Deepening Search Implementation
+    public void ids(int limit, int n, ArrayList<node> nodeList, node destination_node){
+        for(int i = 0; i <= limit; i++){
+            boolean nodes[] = new boolean[20];
+            List<String> visited = new ArrayList<>();
+            Stack<Integer> stack = new Stack<>();
+
+            stack.push(n); // Push root node onto stack
+            int current = 0;
+
+            while(!stack.empty()){
+                n = stack.peek();
+                stack.pop();
+                node curr_n = find_node(n, nodeList);
+                
+
+                if(nodes[n] == false){
+                    nodes[n] = true;
+                    visited.add(curr_n.name);
+                }
+
+                for (int k = 0; k < adj[n].size(); k++){
+                    current = adj[n].get(k);
+                    if(!nodes[current]){
+                        stack.push(current);
+                    }
+                
+                if(curr_n.ID == destination_node.ID){
+                    System.out.println("**********************************************");
+                        System.out.println("Destination node has been found!");
+                        System.out.println("List of cities explored: " + visited);
+                        System.out.println("Path from " + visited.get(0) + " to " + destination_node.name + " is: " + visited);
+                        int cost = calc_path_cost(1, visited.size());
+                        System.out.println("The path cost is: " + cost);
+                        System.out.println("**********************************************");
+                        return;
+                    }
+                }
+                i++;
+                if (i == limit){
+                    System.out.println("Path is not found at level: " + limit);
+                    int cost = calc_path_cost(1, visited.size());
+                    System.out.println("The total path cost thus far is: " + cost);
+                    System.out.println("The list of visited nodes: " + visited);
+                    return;
             }
             }
         }
-        
     }
     public static void main(String[] args){
         int [][] map = new int[20][20];
@@ -328,15 +376,15 @@ public class MapBuilder{
                 mb.addEdge(i, nodeList.get(i).neighbors[j]);
             }
         }
-        
-
-
 
         System.out.println("Printing out Breadth First Search Traversal");
         mb.breadthFirst(root_node.ID, nodeList, dest_node);
         System.out.println("------------------------------------------");
         System.out.println("Printing out Depth First Search Traversal.");
         mb.depthFirst(root_node.ID, nodeList, dest_node);
-        
+        System.out.println("------------------------------------------");
+        System.out.println("Printing out iterative deepening search\nPlease enter a limit");
+        int limit = sc.nextInt();
+        mb.ids(limit, root_node.ID, nodeList, dest_node);
     }
 }
